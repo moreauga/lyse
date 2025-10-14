@@ -701,6 +701,32 @@ class DataFrameModel(QtCore.QObject):
             if status_item.data(self.ROLE_STATUS_PERCENT) != 100:
                 filepath_item = self._model.item(row, self.COL_FILEPATH)
                 return filepath_item.text()
+            
+    @inmain_decorator()        
+    def clear_shots(self):
+        """
+        Michael's edits to keep the number of shots in the queue at 5
+
+        Returns
+        -------
+        None.
+
+        """
+        if len(self.dataframe) > 5:
+            selected_indexes = np.array([0,1])
+            # remove shots
+            self.dataframe = self.dataframe.drop(selected_indexes)
+            self.dataframe.index = pandas.Index(range(len(self.dataframe)))
+            #  Delete one at a time from Qt model:
+            selected_name_items = [self._model.item(int(index)) for index in selected_indexes]
+            for name_item in selected_name_items:
+                row = name_item.row()
+                self._model.removeRow(row)
+            self.renumber_rows()
+        else:
+            return            
+
+
 
 class FileBox(object):
 
@@ -847,6 +873,7 @@ class FileBox(object):
         n_shots_added = 0
         while True:
             try:
+                self.shots_model.clear_shots()
                 filepaths = []
                 filepath = self.incoming_queue.get()
                 filepaths.append(filepath)

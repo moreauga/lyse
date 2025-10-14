@@ -56,7 +56,8 @@ def rangeindex_to_multiindex(df, inplace):
 def asdatetime(timestr):
     if isinstance(timestr, bytes):
         timestr = timestr.decode('utf-8')
-    tz = tzlocal.get_localzone()
+    # tz = tzlocal.get_localzone()
+    tz = 'America/Los_Angeles'
     return pandas.Timestamp(timestr, tz=tz)
 
 def get_nested_dict_from_shot(filepath):
